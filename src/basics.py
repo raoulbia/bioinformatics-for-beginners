@@ -40,12 +40,13 @@ def FrequentWords(Text, k):
         if freq[key] == m:
             words.append(key)
     return words
-seq = "ACGTTGCATGTCGCATGATGCATGAGAGCT"
-print('Most Frequent patterns in input text: {}\n'.format(FrequentWords(Text=ori, k=10)))
+k = 3
+seq = "CGGAGGACTCTAGGTAACGCTTATCAGGTCCATAGGACATTCA"
+print('Most Frequent {}-mer patterns in input text {} : {}\n'.format(k, seq, FrequentWords(Text=seq, k=k)))
 
 
 ### Reverse & Complement
-seq = "AAAACCCGGT"
+seq = "GATTACA"
 
 def Reverse(Pattern):
     reversePattern = ''
@@ -62,10 +63,10 @@ print('Complement: {}\n'.format(Commplement(Pattern=seq)))
 
 def ReverseComplement(Pattern):
     return Reverse(Commplement(Pattern=Pattern))
-print('Reverse Complement: {}\n'.format(ReverseComplement(Pattern=seq)))
+print('Reverse Complement of {}: {}\n'.format(seq, ReverseComplement(Pattern=seq)))
 
 
-### Pattern Matching
+### Pattern Matching / Pattern Count
 """
 Pattern Matching Problem:  Find all occurrences of a pattern in a string.
 Input: Strings Pattern and Genome.
@@ -80,6 +81,6 @@ def PatternMatching(Pattern, Genome):
             positions.append(i)
     return positions
 
-Pattern = 'ATAT'
-Genome='GATATATGCATATACTT'
+Pattern = 'CGCG'
+Genome='CGCGATACGTTACATACATGATAGACCGCGCGCGATCATATCGCGATTATC'
 print('{} occurs in the genome {} at the following indices:\n{}\n'.format(Pattern, Genome, PatternMatching(Pattern=Pattern, Genome=Genome)))
