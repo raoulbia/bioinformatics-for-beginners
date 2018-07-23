@@ -18,7 +18,25 @@ def SkewArray(Genome):
 
     return skewArray
 
+def MinimumSkew(Genome):
+
+    positions = []
+    skewArray = SkewArray(Genome=Genome)
+
+    # find the minimum value of all values in the skew array
+    min_val = min(skewArray)
+
+    # range over the length of the skew array and add all positions achieving the min to positions
+    for i in range(len(skewArray)):
+        if skewArray[i] == min_val:
+            positions.append(i)
+    return positions
+
 text = 'CATGGGCATCGGCCATACGCC'
 text = 'AGCGTGCCGAAATATGCCGCCAGACCTGCTGCGGTGGCCTCGCCGACTTCACGGATGCCAAGTGCATAGAGGAAGCGAGCAAAGGTGGTTTCTTTCGCTTTATCCAGCGCGTTAACCACGTTCTGTGCCGACTTT'
+text = 'TAAAGACTGCCGAGAGGCCAACACGAGTGCTAGAACGAGGGGCGTAAACGCGGGTCCGAT'
 res = SkewArray(Genome=text)
 print('SkewArray: {}'.format(" ".join(str(x) for x in res)))
+
+res2 = MinimumSkew(Genome=text)
+print(res2)
