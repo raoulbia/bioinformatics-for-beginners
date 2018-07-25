@@ -2,8 +2,19 @@
 # -*- coding: utf-8 -*-
 
 """
+LHY, CCA1, and TOC1 are able to control the transcription of other genes because the regulatory proteins that they
+encode are transcription factors, or master regulatory proteins that turn other genes on and off. A transcription
+factor regulates a gene by binding to a specific short DNA interval called a regulatory motif, or transcription factor
+binding site, in the gene’s upstream region, a 600-1000 nucleotide-long region preceding the start of the gene.
+
+For example, CCA1 binds to "AAAAAATCT" in the upstream region of many genes regulated by CCA1.
+
+
+
 this is a good blog post explaining how the greedy algorithm works:
 http://www.mrgraeme.co.uk/greedy-motif-search/
+
+
 """
 # subroutines
 def Count(Motifs):
