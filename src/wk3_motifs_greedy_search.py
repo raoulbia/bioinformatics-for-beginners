@@ -2,32 +2,46 @@
 # -*- coding: utf-8 -*-
 
 """
-LHY, CCA1, and TOC1 are able to control the transcription of other genes because the regulatory proteins that they
-encode are transcription factors, or master regulatory proteins that turn other genes on and off. A transcription
-factor regulates a gene by binding to a specific short DNA interval called a regulatory motif, or transcription factor
-binding site, in the gene’s upstream region, a 600-1000 nucleotide-long region preceding the start of the gene.
+certain genes are able to control the transcription of other genes because the regulatory proteins that
+they encode are transcription factors, or master regulatory proteins that turn other genes on and off.
 
-For example, CCA1 binds to "AAAAAATCT" in the upstream region of many genes regulated by CCA1.
+A transcription factor regulates a gene by binding to a specific short DNA interval called a regulatory motif,
+or transcription factor binding site, in the gene’s upstream region.
 
+A gene’s upstream region is a 600-1000 nucleotide-long region preceding the start of the gene.
 
+For example, CCA1 expresses master regulatory proteins that bind to "AAAAAATCT" in the upstream region of
+many genes regulated by CCA1.
 
 this is a good blog post explaining how the greedy algorithm works:
 http://www.mrgraeme.co.uk/greedy-motif-search/
 
+the mechanism relies on the following nested subroutines:
+
+---| get_profile_matrix(Motifs)
+-----| get_count_matrix(Motifs)
+---| get_most_probable_kmer_from_profile_matrix((Text, profile))
+---| get_consensus_motif_score(Motifs)
+-----| get_consensus_motif(Motifs)
+-------| get_count_matrix(Motifs)
 
 """
-# subroutines
-def Count(Motifs):
-    countMatrix = {}
+def get_count_matrix(Motifs):
+    """
+    get the counts of each of the DNA bases
+    note that the count matrix has four rows and len(motifs) nbr of columns
+    """
 
-    # init dict of lists
+    countMatrix = {}
     k = len(Motifs[0])
+
+    # init dict of lists (one list for each DNA base)
     for symbol in "ACGT":
         countMatrix[symbol] = []
         for j in range(k):
-            countMatrix[symbol].append(0)
+            countMatrix[symbol].append(1)
 
-    # populate dict of lists
+# populate dict of lists
     t = len(Motifs)
     for i in range(t):
         for j in range(k):
@@ -35,59 +49,122 @@ def Count(Motifs):
             countMatrix[symbol][j] += 1
     return countMatrix
 
-# Input:  A list of kmers Motifs
-# Output: the profile matrix of Motifs, as a dictionary of lists.
-def Profile(Motifs):
-    t = len(Motifs)
-    k = len(Motifs[0])
-    profileMatrix = {}
-    profileMatrix = Count(Motifs=Motifs)
+
+
+def get_profile_matrix(Motifs):
+    """
+    is the same as the get_count_matrix with all elements divided by total nbr of motifs
+
+    element (i,j) is the frequency of the i-th nucleotide in the j-th column of the motif matrix
+    i.e., the number of occurrences of the i-th nucleotide divided by the number of nucleotides
+    in the column (resp. the nbr of motifs)
+
+    Note that the elements of any column of the profile matrix sum to 1.
+
+    subroutine: get_count_matrix
+    """
+    t = len(Motifs) + 4
+    profileMatrix = get_count_matrix(Motifs=Motifs)
     for k, v in profileMatrix.items():
-        v[:] = [i * 1.0 / t for i in v]
+        v[:] = [i / t for i in v]
     return profileMatrix
 
-def Consensus(Motifs):
+
+def get_consensus_motif(Motifs):
+    """
+    a consensus motif is formed from the most frequently occurring nucleotides in each column
+    of the motif matrix (ties are broken arbitrarily).
+
+    If we select Motifs correctly from the collection of upstream regions,
+    then the corresponding consensus motif provides a candidate regulatory motif for these regions
+
+    subroutine: get_count_matrix
+    """
     k = len(Motifs[0])
-    count = Count(Motifs)
+
+    count_matrix = get_count_matrix(Motifs)
     consensus = ""
-    for j in range(k):
+    for i in range(k):
         m = 0
         frequentSymbol = ""
         for symbol in "ACGT":
-            if count[symbol][j] > m:
-                m = count[symbol][j]
+            if count_matrix[symbol][i] > m:
+                m = count_matrix[symbol][i]
                 frequentSymbol = symbol
         consensus += frequentSymbol
     return consensus
 
-def Score(Motifs):
+
+def get_consensus_motif_score(Motifs):
+    """
+    score = sum sum the number of symbols in the j-th column of Motifs that do not match
+    the symbol in position j of the consensus string
+
+    subroutines: get_consensus_motifs (which needs get_count_matrix)
+    """
     score = 0
-    consensus = Consensus(Motifs=Motifs)
+    consensus = get_consensus_motif(Motifs=Motifs)
+
+    """
+    for each character at postion j in the consensus motif we need to perform a count operation
+    in the corresponding column j of the motifs matrix
+
+    to do so we 'transpose' the input lists such as to create lists consisting of only
+    the elements of the ith column of each input motif list
+    e.g. motifs_by_col[0] consists of motifs[0][0], motifs[1][0], motifs[2][0] ...
+
+    in this way it is then easy to count the nbr of elemets that do not match
+    the symbol in position j of the consensus string
+    """
     motifs_by_col = [''.join(x) for x in zip(*Motifs)]
-    for i in range(len(motifs_by_col)):
+    n = len(motifs_by_col)
+    for i in range(n):
         count = [1 for x in motifs_by_col[i] if not x == consensus[i]]
-        score += sum(count)
+        score += sum(count) * (1 / n ** 4)
     return score
 
-# Then copy your get_most_probable_kmer_from_profile_matrix(Text, k, get_profile_matrix) and get_string_probability_from_profile_matrix(Text, get_profile_matrix) functions here.
-def Pr(Text, profile):
+
+def get_string_probability_from_profile_matrix(Text, profile):
+    """
+    returns the probability that a profile matrix will produce a given string
+
+    the probability is given by the product of individual nucleotide probabilities.
+
+    subroutine: None
+    """
     p = 1
-    pos = 0
+    pos = 0 # init pos
     for i in Text:
-        p *= profile[i][pos]
+        p *= profile[i][pos] 
+        # move one position to the right
         pos += 1
-        # profile_by_col = [x for x in zip(*profile.values()) if profile[i] == i]
-        # print(profile_by_col)
     return p
 
 
-def ProfileMostProbableKmer(text, k, profile):
+def get_most_probable_kmer_from_profile_matrix(text, k, profile):
+    """
+    Given a profile matrix, we can compute the probability of every k-mer in a text string
+    and find the "most probable" k-mer in this text
+
+    i.e. the k-mer that, among all possible k-mers in the text, is most likely
+    to have been generated by the profile matrix
+
+    recall that the profile matrix represents the frequency of occurrence
+    of each DNA base of the input text in the corresponding column of the motifs matrix
+
+    applies sliding k-window across input text
+    at each slide, gets probaility for cuurrent window and stores it
+    at the end the max proba is used to select the most probable k-mer
+
+    subroutine: get_string_probability_from_profile_matrix
+    """
     n = len(text)
     most_probable = {}
     for i in range(n - k + 1):
         pattern = text[i:i + k]
-        most_probable[pattern] = Pr(pattern, profile)
+        most_probable[pattern] = get_string_probability_from_profile_matrix(pattern, profile)
     return max(most_probable, key=most_probable.get)
+
 
 # Input:  A list of kmers Dna, and integers k and t (where t is the number of kmers in Dna)
 # Output: GreedyMotifSearch(Dna, k, t)
@@ -101,9 +178,9 @@ def GreedyMotifSearch(Dna, k, nbr_strings):
         Motifs = []
         Motifs.append(Dna[0][i:i + k])
         for j in range(1, nbr_strings):
-            P = Profile(Motifs[0:j])
-            Motifs.append(ProfileMostProbableKmer(Dna[j], k, P))
-        if Score(Motifs) < Score(BestMotifs):
+            P = get_profile_matrix(Motifs[0:j])
+            Motifs.append(get_most_probable_kmer_from_profile_matrix(Dna[j], k, P))
+        if get_consensus_motif_score(Motifs) < get_consensus_motif_score(BestMotifs):
             BestMotifs = Motifs
     return BestMotifs
 
@@ -127,4 +204,4 @@ Motifs = GreedyMotifSearch(Dna, k, t)
 # Print the Motifs variable
 print(Motifs)
 # Print get_consensus_motif_score(Motifs)
-print(Score(Motifs))
+print(get_consensus_motif_score(Motifs))

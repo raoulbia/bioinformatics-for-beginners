@@ -3,7 +3,7 @@
   "test_motifs.py::test_profile_matrix",
   "test_motifs.py::test_consensus_motif",
   "test_motifs.py::test_consensus_motif_score",
-  "test_motifs.py::test_profile_probability",
-  "test_motifs.py::test_ProfileMostProbableKmer",
+  "test_motifs.py::test_string_probability_from_profile_matrix",
+  "test_motifs.py::test_get_most_probable_kmer_from_profile_matrix",
   "test_motifs.py::test_GreedyMotifSearch"
 ]

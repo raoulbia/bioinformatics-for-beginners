@@ -14,7 +14,7 @@ def get_count_matrix(Motifs):
     for symbol in "ACGT":
         countMatrix[symbol] = []
         for j in range(k):
-            countMatrix[symbol].append(0)
+            countMatrix[symbol].append(1)
 
     # populate dict of lists
     t = len(Motifs)
@@ -36,13 +36,20 @@ def get_profile_matrix(Motifs):
     Note that the elements of any column of the profile matrix sum to 1.
 
     subroutine: get_count_matrix
+
+    NOTE
+    By definition, we divide each element of our matrix by the sum of its column
+    (so that each column results in a sum of 1). Before, the sum total of any given column
+    was len(Motifs). Now, however, because we add an extra +1 for each letter {A,C,G,T},
+    we add 4 to each column's total via pseudocounts. Therefore, the sum total of each column
+    (i.e., the number we need to divide by in order to create our profile matrix) is t+4 instead of t
+    (where t﻿ is len(Motifs))
     """
-    t = len(Motifs)
-    # k = len(Motifs[0])
-    # profileMatrix = {}
+    t = len(Motifs) + 4
+
     profileMatrix = get_count_matrix(Motifs=Motifs)
     for k, v in profileMatrix.items():
-        v[:] = [i * 1.0 / t for i in v]
+        v[:] = [i / t for i in v]
     return profileMatrix
 
 
@@ -89,13 +96,14 @@ def get_consensus_motif_score(Motifs):
     the elements of the ith column of each input motif list
     e.g. motifs_by_col[0] consists of motifs[0][0], motifs[1][0], motifs[2][0] ...
 
-    in this way it is then easy to count the nbr of elemets that do not match
+    in this way it is then easy  to count the nbr of elemets that do not match
     the symbol in position j of the consensus string
     """
     motifs_by_col = [''.join(x) for x in zip(*Motifs)]
-    for i in range(len(motifs_by_col)):
+    n = len(motifs_by_col)
+    for i in range(n):
         count = [1 for x in motifs_by_col[i] if not x == consensus[i]]
-        score += sum(count)
+        score += sum(count) * (1/n**4) # multiply by (1/n**4) to account for intializing the count matrix with ones
     return score
 
 
