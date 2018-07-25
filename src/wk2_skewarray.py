@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
+"""
+skew arrays are used for finding DnaA boxes in the region of the E. coli genome
+hypothesized by the minimum skew as ori.
+see here for an example: https://stepik.org/lesson/23062/step/1?unit=6794
+Note: hidden messages have a tendency to cluster within a genome, and most of them have nothing to do with replication.
+"""
 def SkewArray(Genome):
 
     Genome = '_' + Genome
@@ -35,6 +40,7 @@ def MinimumSkew(Genome):
 text = 'CATGGGCATCGGCCATACGCC'
 text = 'AGCGTGCCGAAATATGCCGCCAGACCTGCTGCGGTGGCCTCGCCGACTTCACGGATGCCAAGTGCATAGAGGAAGCGAGCAAAGGTGGTTTCTTTCGCTTTATCCAGCGCGTTAACCACGTTCTGTGCCGACTTT'
 text = 'TAAAGACTGCCGAGAGGCCAACACGAGTGCTAGAACGAGGGGCGTAAACGCGGGTCCGAT'
+text = 'CATTCCAGTACTTCGATGATGGCGTGAAGA'
 res = SkewArray(Genome=text)
 print('SkewArray: {}'.format(" ".join(str(x) for x in res)))
 

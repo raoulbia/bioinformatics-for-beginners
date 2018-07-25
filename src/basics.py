@@ -66,7 +66,7 @@ def ReverseComplement(Pattern):
 print('Reverse Complement of {}: {}\n'.format(seq, ReverseComplement(Pattern=seq)))
 
 
-### Pattern Matching / Pattern Count
+### Pattern Matching / Pattern get_count_matrix
 """
 Pattern Matching Problem:  Find all occurrences of a pattern in a string.
 Input: Strings Pattern and Genome.
