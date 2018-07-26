@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import random
+
 def get_count_matrix(Motifs):
     """
     get the counts of each of the DNA bases
@@ -45,11 +47,11 @@ def get_profile_matrix(Motifs):
     (i.e., the number we need to divide by in order to create our profile matrix) is t+4 instead of t
     (where t﻿ is len(Motifs))
     """
-    t = len(Motifs) + 4
+    t = len(Motifs)
 
     profileMatrix = get_count_matrix(Motifs=Motifs)
     for k, v in profileMatrix.items():
-        v[:] = [i / t for i in v]
+        v[:] = [i / t + 4 for i in v]
     return profileMatrix
 
 
@@ -78,7 +80,7 @@ def get_consensus_motif(Motifs):
     return consensus
 
 
-def get_consensus_motif_score(Motifs):
+def Score(Motifs):
     """
     score = sum sum the number of symbols in the j-th column of Motifs that do not match
     the symbol in position j of the consensus string
@@ -149,6 +151,32 @@ def get_most_probable_kmer_from_profile_matrix(text, k, profile):
     return max(most_probable, key=most_probable.get)
 
 
+def get_kmer_motifs(Profile, Dna):
+    k = len(Profile['A'])
+    motifs = []
+    for i in range(len(Dna)):
+        motifs.append(get_most_probable_kmer_from_profile_matrix(Dna[i], k, Profile))
+    return motifs
+
+def get_random_motifs(Dna, k, t):
+    """Important Note:
+       an independent random starting position should be generated for each line in Dna
+    """
+    m = len(Dna[0])
+    # print('\nm: {} k: {} m-k+1:{}'.format(m,k, m-k))
+
+    random_motifs = []
+    for i in range(t):
+        r = random.randint(1, m)
+        # print(r)
+        if r > m - k :
+            r = r - k
+            # print('  {}'.format(r+k))
+
+        random_motifs.append(Dna[i][r:r+k])
+    return random_motifs
+
+
 def GreedyMotifSearch(Dna, k, nbr_strings):
     BestMotifs = []
     for i in range(0, nbr_strings):
@@ -161,8 +189,19 @@ def GreedyMotifSearch(Dna, k, nbr_strings):
         for j in range(1, nbr_strings):
             P = get_profile_matrix(Motifs[0:j])
             Motifs.append(get_most_probable_kmer_from_profile_matrix(Dna[j], k, P))
-        if get_consensus_motif_score(Motifs) < get_consensus_motif_score(BestMotifs):
+        if Score(Motifs) < Score(BestMotifs):
             BestMotifs = Motifs
     return BestMotifs
 
 
+def RandomizedMotifSearch(Dna, k, t):
+    M = get_random_motifs(Dna, k, t)
+    BestMotifs = M
+
+    while True:
+        Profile = get_profile_matrix(M)
+        M = get_kmer_motifs(Profile, Dna)
+        if Score(M) < Score(BestMotifs):
+            BestMotifs = M
+        else:
+            return BestMotifs

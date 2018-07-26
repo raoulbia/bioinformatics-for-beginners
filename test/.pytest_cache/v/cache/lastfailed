@@ -1,7 +1,12 @@
 {
+  "test_motifs.py::test_GreedyMotifSearch": true,
+  "test_motifs.py::test_GreedyMotifSearch2": true,
   "test_motifs.py::test_consensus_motif": true,
   "test_motifs.py::test_consensus_motif_score": true,
   "test_motifs.py::test_count": true,
+  "test_motifs.py::test_get_kmer_motifs": true,
   "test_motifs.py::test_get_most_probable_kmer_from_profile_matrix": true,
-  "test_motifs.py::test_profile_matrix": true
+  "test_motifs.py::test_get_random_motifs": true,
+  "test_motifs.py::test_profile_matrix": true,
+  "test_motifs.py::test_string_probability_from_profile_matrix": true
 }

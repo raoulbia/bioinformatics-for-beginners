@@ -1,31 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-"""
-certain genes are able to control the transcription of other genes because the regulatory proteins that
-they encode are transcription factors, or master regulatory proteins that turn other genes on and off.
-
-A transcription factor regulates a gene by binding to a specific short DNA interval called a regulatory motif,
-or transcription factor binding site, in the gene’s upstream region.
-
-A gene’s upstream region is a 600-1000 nucleotide-long region preceding the start of the gene.
-
-For example, CCA1 expresses master regulatory proteins that bind to "AAAAAATCT" in the upstream region of
-many genes regulated by CCA1.
-
-this is a good blog post explaining how the greedy algorithm works:
-http://www.mrgraeme.co.uk/greedy-motif-search/
-
-the mechanism relies on the following nested subroutines:
-
----| get_profile_matrix(Motifs)
------| get_count_matrix(Motifs)
----| get_most_probable_kmer_from_profile_matrix((Text, profile))
----| get_consensus_motif_score(Motifs)
------| get_consensus_motif(Motifs)
--------| get_count_matrix(Motifs)
-
-"""
 def get_count_matrix(Motifs):
     """
     get the counts of each of the DNA bases
