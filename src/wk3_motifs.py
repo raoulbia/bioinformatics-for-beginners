@@ -11,7 +11,7 @@ def get_count_matrix(Motifs):
 
     countMatrix = {}
     k = len(Motifs[0])
-
+    # print(Motifs)
     # init dict of lists (one list for each DNA base)
     for symbol in "ACGT":
         countMatrix[symbol] = []
@@ -20,6 +20,7 @@ def get_count_matrix(Motifs):
 
     # populate dict of lists
     t = len(Motifs)
+
     for i in range(t):
         for j in range(k):
             symbol = Motifs[i][j]
@@ -80,9 +81,9 @@ def get_consensus_motif(Motifs):
     return consensus
 
 
-def Score(Motifs):
+def get_consensus_motif_score(Motifs):
     """
-    score = sum sum the number of symbols in the j-th column of Motifs that do not match
+    score = sum the number of symbols in the j-th column of Motifs that do not match
     the symbol in position j of the consensus string
 
     subroutines: get_consensus_motifs (which needs get_count_matrix)
@@ -159,19 +160,18 @@ def get_kmer_motifs(Profile, Dna):
     return motifs
 
 def get_random_motifs(Dna, k, t):
-    """Important Note:
-       an independent random starting position should be generated for each line in Dna
-    """
+    """Important Note: an independent random starting position should be generated for each Dna string"""
     m = len(Dna[0])
     # print('\nm: {} k: {} m-k+1:{}'.format(m,k, m-k))
 
     random_motifs = []
     for i in range(t):
-        r = random.randint(1, m)
+        r = random.randint(1, m-k)
         # print(r)
-        if r > m - k :
-            r = r - k
-            # print('  {}'.format(r+k))
+        # if r > m - k :
+        #     r = r - k
+        #     print('  {}'.format(r+k))
+        # print(Dna[i][r:r+k])
 
         random_motifs.append(Dna[i][r:r+k])
     return random_motifs
@@ -189,7 +189,7 @@ def GreedyMotifSearch(Dna, k, nbr_strings):
         for j in range(1, nbr_strings):
             P = get_profile_matrix(Motifs[0:j])
             Motifs.append(get_most_probable_kmer_from_profile_matrix(Dna[j], k, P))
-        if Score(Motifs) < Score(BestMotifs):
+        if get_consensus_motif_score(Motifs) < get_consensus_motif_score(BestMotifs):
             BestMotifs = Motifs
     return BestMotifs
 
@@ -201,7 +201,7 @@ def RandomizedMotifSearch(Dna, k, t):
     while True:
         Profile = get_profile_matrix(M)
         M = get_kmer_motifs(Profile, Dna)
-        if Score(M) < Score(BestMotifs):
+        if get_consensus_motif_score(M) < get_consensus_motif_score(BestMotifs):
             BestMotifs = M
         else:
             return BestMotifs
