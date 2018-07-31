@@ -177,3 +177,16 @@ def test_RandomizedMotifSearch():
         BestMotifs.append(RandomizedMotifSearch(Dna=Dna, k=k, t=t))
     print('\nRandomizedMotifSearch results: {}'.format(min(BestMotifs)))
     [print(get_consensus_motif_score(i)) for i in BestMotifs]
+
+def test_RandomizedMotifSearch_Coursera_Test():
+    t = 4  # nbr of string
+    k = 3
+    N = 1
+    Dna = [
+        'AAGCCAAA',
+        'AATCCTGG',
+        'GCTACTTG',
+        'ATGTTTTG']
+
+    res = RandomizedMotifSearch(Dna=Dna, k=k, t=t)
+    print(res)

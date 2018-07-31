@@ -61,3 +61,6 @@ The greedy motif search process relies on the following nested subroutines:
 |       |-- get_count_matrix(Motifs)
 ```
 
+#### Reading
+
+[Bioinformatics Algorithms - An active Learning Aproach](http://bioinformaticsalgorithms.com/)
